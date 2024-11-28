@@ -1,0 +1,27 @@
+networks:
+  web:
+    external: true
+  lan:
+    external: false
+    name: lan_${NAME}
+
+services:
+  vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80" # localhost
+    volumes:
+      - .:/app
+    env-file:
+      - .env
+    networks:
+      - web
+      - lan
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${NAME}.entryPoints=websecure
+      - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
+      - traefik.http.routers.${NAME}.tls=true
+      - traefik.http.routers.${NAME}.tls.certresolver=myresolver
